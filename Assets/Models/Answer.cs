@@ -1,7 +1,9 @@
+using System.Collections.Generic;
+
 [System.Serializable]
 public class Answer {
     public string Label;
     public int NextQuestionId;
-    public Condition Required;
-    public Condition Change;
+    public Dictionary<string, bool> RequireFlag;
+    public Dictionary<string, bool> ChangeFlag;
 }

@@ -59,19 +59,23 @@ public class GameManager : MonoBehaviour {
     private void ChangeQuestion(Answer answer) {
         currentTextAlreadyFilled = false;
         HideButtons();
-        //test for missing key
-        if (answer.Change.Key != null)
+        //test for empty dictionary
+        if (answer.ChangeFlag != null)
         {
-            string label = answer.Change.Key;
-            bool value = answer.Change.BoolValue;
-            //chek if flag was added to dictionary else add it
-            if (flags.ContainsKey(label))
+            print("A");
+            foreach(KeyValuePair<string,bool> flag in answer.ChangeFlag)
             {
-                flags[label] = value;
-            }
-            else
-            {
-                flags.Add(label, value);
+                //check if flag was added to flags dictionary and chane it, else add it
+                if (flags.ContainsKey(flag.Key))
+                {
+                    print("B");
+                    flags[flag.Key] = flag.Value;
+                }
+                else
+                {
+                    print("C");
+                    flags.Add(flag.Key, flag.Value);
+                }
             }
         }
         currentQuestionIndex = answer.NextQuestionId;
@@ -84,56 +88,66 @@ public class GameManager : MonoBehaviour {
     }
 
     private void FillUITexts() {
-        if (!currentTextAlreadyFilled) {
+        if (!currentTextAlreadyFilled)
+        {
             Statement CurrQuestion = CurrentQuestion;
-            Answer CurrAnswer;
-            Condition CurrCondition;
-            bool activateButton;
             StopAllCoroutines();
-            StartCoroutine(TypeSentence(CurrQuestion.Question));
-            for (var i = 0; i < CurrQuestion.Answers.Length; i++) {
-                CurrAnswer = CurrQuestion.Answers[i];
-                CurrCondition = CurrAnswer.Required;
-                activateButton = false;
-                // check for mising key
-                if (CurrCondition.Key != null)
+            StartCoroutine(TypeSentence(CurrentQuestion.Question));
+            for (var i = 0; i < CurrentQuestion.Answers.Length; i++) {
+                if (CheckRequirment(CurrentQuestion.Answers[i]))
                 {
-                    //check if key is present in dictionary
-                    if (flags.ContainsKey(CurrCondition.Key))
-                    {
-                        //check if flag value matches required value
-                        if (flags[CurrCondition.Key] == CurrCondition.BoolValue)
-                        {
-                            activateButton = true;
-                        }
-                    }
-                    else
-                    {
-                        activateButton = true;
-                    }
-                }
-                else
-                {
-                    activateButton = true;
-                }
-
-                if (activateButton)
-                {
-                    ButtonTexts[i].text = CurrAnswer.Label;
+                    ButtonTexts[i].text = CurrentQuestion.Answers[i].Label;
                     AnswerButtons[i].gameObject.SetActive(true);
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(CurrQuestion.Image)) {
-                Sprite background = Resources.Load<Sprite>(CurrQuestion.Image);
+            if (!string.IsNullOrWhiteSpace(CurrentQuestion.Image))
+            {
+                Sprite background = Resources.Load<Sprite>(CurrentQuestion.Image);
                 BackgroundImage.sprite = background;
-            }else {
+            }
+            else
+            {
                 Sprite background = Resources.Load<Sprite>("Sprites/Backgrounds/black");
                 BackgroundImage.sprite = background;
             }
 
             currentTextAlreadyFilled = true;
         }
+    }
+
+    private bool CheckRequirment(Answer answer)
+    {
+        if (answer.RequireFlag != null)
+        {
+            print(1);
+            //check if key is present in dictionary
+            foreach(KeyValuePair<string,bool> flag in answer.RequireFlag)
+            {
+                if (flags.ContainsKey(flag.Key))
+                {
+                    print(2);
+                    //check if flag value matches required value
+                    if (flags[flag.Key] != flag.Value)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    print(3);
+                    if (flag.Value == true)
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        if (answer.Label == "Feed the cat")
+        {
+            print(JsonUtility.ToJson(answer, true));
+        }
+        return true;
     }
 
     IEnumerator TypeSentence(string sentence) {

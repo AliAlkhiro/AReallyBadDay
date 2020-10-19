@@ -65,10 +65,9 @@
                 {
                     "Label": "Feed the cat",
                     "NextQuestionId": 40,
-                    "Required":
+                    "RequireFlag":
                     {
-                        "Key": "CatIsFed",
-                        "BoolValue": false
+                        "CatIsFed" : false
                     }
                 },
                 {
@@ -89,10 +88,9 @@
                 {
                     "Label": "Famous cheapest cat food !",
                     "NextQuestionId": 28,
-                    "Change":
+                    "ChangeFlag":
                     {
-                        "Key": "CatIsFed",
-                        "BoolValue": true
+                        "CatIsFed" : true
                     }
                 },
                 {
@@ -194,10 +192,9 @@
                 {
                     "Label": "Feed the cat",
                     "NextQuestionId": 40,
-                    "Required":
+                    "RequireFlag":
                     {
-                        "Key": "CatIsFed",
-                        "BoolValue": false
+                        "CatIsFed" : false
                     }
                 },
                 {
